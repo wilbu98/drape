@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Drape",
+    "slug": "drape",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAFAFA"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.drape.app",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAFAFA"
+      },
+      "package": "com.drape.app",
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        { "cameraPermission": "Drape needs camera access to add clothes to your wardrobe." }
+      ],
+      [
+        "expo-location",
+        { "locationWhenInUsePermission": "Drape uses your location to get local weather for outfit suggestions." }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#1A1A1A"
+        }
+      ]
+    ],
+    "scheme": "drape",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
