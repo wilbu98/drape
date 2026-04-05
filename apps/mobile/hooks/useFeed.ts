@@ -3,6 +3,14 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import type { OutfitPost } from '@/types'
 
+async function triggerNotification(type: string, userId: string, data?: Record<string, string>) {
+  try {
+    await supabase.functions.invoke('send-notification', { body: { type, userId, data } })
+  } catch {
+    // Non-critical — don't throw
+  }
+}
+
 const PAGE_SIZE = 12
 
 export function useFeed() {
@@ -60,6 +68,20 @@ export function useFeed() {
           user_id: session!.user.id,
           post_id: postId,
         })
+        // Notify post owner
+        const { data: post } = await supabase
+          .from('outfit_posts')
+          .select('user_id')
+          .eq('id', postId)
+          .single()
+        if (post && post.user_id !== session!.user.id) {
+          const { data: liker } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', session!.user.id)
+            .single()
+          triggerNotification('new_like', post.user_id, { username: liker?.username ?? '' })
+        }
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feed'] }),

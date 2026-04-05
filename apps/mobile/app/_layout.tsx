@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StatusBar } from 'expo-status-bar'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/stores/authStore'
+import { useNotifications } from '@/hooks/useNotifications'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +16,7 @@ function RootLayoutNav() {
   const { session, profile } = useAuth()
   const router = useRouter()
   const segments = useSegments()
+  useNotifications()
 
   useEffect(() => {
     const inAuth = segments[0] === '(auth)'

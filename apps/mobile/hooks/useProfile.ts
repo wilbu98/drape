@@ -3,6 +3,14 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/authStore'
 import type { Profile, OutfitPost } from '@/types'
 
+async function triggerNotification(type: string, userId: string, data?: Record<string, string>) {
+  try {
+    await supabase.functions.invoke('send-notification', { body: { type, userId, data } })
+  } catch {
+    // Non-critical
+  }
+}
+
 export function useProfile(username: string) {
   const { session } = useAuthStore()
   const queryClient = useQueryClient()
@@ -86,6 +94,13 @@ export function useProfile(username: string) {
           follower_id: session!.user.id,
           following_id: profile.id,
         })
+        // Notify the followed user
+        const { data: follower } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', session!.user.id)
+          .single()
+        triggerNotification('new_follower', profile.id, { username: follower?.username ?? '' })
       }
     },
     onSuccess: () => {

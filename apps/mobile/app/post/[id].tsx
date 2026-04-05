@@ -69,6 +69,21 @@ export default function PostDetailScreen() {
         body,
       })
       if (error) throw error
+      // Notify post owner
+      if (post && post.user_id !== session!.user.id) {
+        const { data: commenter } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', session!.user.id)
+          .single()
+        supabase.functions.invoke('send-notification', {
+          body: {
+            type: 'new_comment',
+            userId: post.user_id,
+            data: { username: commenter?.username ?? '', comment: body.slice(0, 60) },
+          },
+        }).catch(() => {})
+      }
     },
     onSuccess: () => {
       setComment('')
