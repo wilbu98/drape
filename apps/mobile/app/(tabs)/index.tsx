@@ -9,6 +9,7 @@ import { useOutfit } from '@/hooks/useOutfit'
 import { WeatherBadge } from '@/components/outfit/WeatherBadge'
 import { ActivitySelector } from '@/components/outfit/ActivitySelector'
 import { OutfitCard } from '@/components/outfit/OutfitCard'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 export default function HomeScreen() {
   const { profile } = useAuthStore()
@@ -82,6 +83,12 @@ export default function HomeScreen() {
 
         <View className="px-5">
           {/* Weather */}
+          {loadingWeather && (
+            <View className="mb-4">
+              <Skeleton width={200} height={32} rounded />
+            </View>
+          )}
+
           {weather && (
             <View className="mb-4">
               <WeatherBadge weather={weather} />

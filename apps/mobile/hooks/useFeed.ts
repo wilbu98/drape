@@ -20,6 +20,7 @@ export function useFeed() {
   const {
     data,
     isLoading,
+    isError,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
@@ -107,6 +108,7 @@ export function useFeed() {
   return {
     posts,
     isLoading,
+    isError,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,

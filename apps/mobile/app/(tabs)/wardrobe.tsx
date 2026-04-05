@@ -8,6 +8,7 @@ import { Plus, Search } from 'lucide-react-native'
 import { useWardrobe } from '@/hooks/useWardrobe'
 import { CategoryFilter } from '@/components/wardrobe/CategoryFilter'
 import { WardrobeItemTile } from '@/components/wardrobe/WardrobeItemTile'
+import { WardrobeGridSkeleton } from '@/components/ui/Skeleton'
 import type { WardrobeItem } from '@/types'
 
 export default function WardrobeScreen() {
@@ -71,9 +72,7 @@ export default function WardrobeScreen() {
 
       {/* Grid */}
       {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#1A1A1A" />
-        </View>
+        <WardrobeGridSkeleton />
       ) : filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center px-10">
           <Text className="font-serif text-xl text-text-primary mb-2 text-center">

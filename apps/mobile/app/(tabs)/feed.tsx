@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import {
-  View, Text, FlatList, ActivityIndicator,
+  View, Text, FlatList, ScrollView, ActivityIndicator,
   RefreshControl, TouchableOpacity,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -8,6 +8,8 @@ import { useRouter } from 'expo-router'
 import { useFeed } from '@/hooks/useFeed'
 import { PostCard } from '@/components/feed/PostCard'
 import { useAuthStore } from '@/stores/authStore'
+import { PostCardSkeleton } from '@/components/ui/Skeleton'
+import { ErrorView } from '@/components/ui/ErrorView'
 import type { OutfitPost } from '@/types'
 
 export default function FeedScreen() {
@@ -16,6 +18,7 @@ export default function FeedScreen() {
   const {
     posts,
     isLoading,
+    isError,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
@@ -43,8 +46,24 @@ export default function FeedScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator color="#1A1A1A" />
+      <SafeAreaView className="flex-1 bg-background">
+        <View className="flex-row items-center justify-between px-5 pt-4 pb-3 border-b border-border">
+          <Text className="font-serif text-2xl text-text-primary">Feed</Text>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 8 }}>
+          {[1, 2, 3].map((i) => <PostCardSkeleton key={i} />)}
+        </ScrollView>
+      </SafeAreaView>
+    )
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 bg-background">
+        <View className="flex-row items-center justify-between px-5 pt-4 pb-3 border-b border-border">
+          <Text className="font-serif text-2xl text-text-primary">Feed</Text>
+        </View>
+        <ErrorView message="Couldn't load your feed" onRetry={refetch} />
       </SafeAreaView>
     )
   }

@@ -2,9 +2,11 @@
 module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        // Light mode
         background: '#FAFAFA',
         surface: '#FFFFFF',
         'surface-raised': '#F4F4F4',
@@ -30,6 +32,9 @@ module.exports = {
         card: '12px',
         btn: '8px',
         pill: '999px',
+      },
+      boxShadow: {
+        card: '0 1px 4px rgba(0,0,0,0.06)',
       },
     },
   },
