@@ -1,8 +1,8 @@
-import { View, Text, FlatList, TouchableOpacity, Dimensions } from 'react-native'
+import { View, FlatList, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native'
 import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
-import { Settings } from 'lucide-react-native'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ArrowLeft } from 'lucide-react-native'
 import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/hooks/useProfile'
 import { ProfileHeader } from '@/components/profile/ProfileHeader'
@@ -11,10 +11,20 @@ import type { OutfitPost } from '@/types'
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 const TILE_SIZE = (SCREEN_WIDTH - 4) / 3
 
-export default function ProfileScreen() {
+export default function UserProfileScreen() {
+  const { username } = useLocalSearchParams<{ username: string }>()
   const router = useRouter()
-  const { profile: authProfile } = useAuthStore()
-  const { profile, posts, followerCount, followingCount } = useProfile(authProfile?.username ?? '')
+  const { session } = useAuthStore()
+  const {
+    profile,
+    posts,
+    followerCount,
+    followingCount,
+    isFollowing,
+    isLoading,
+    toggleFollow,
+    togglingFollow,
+  } = useProfile(username)
 
   function renderPost({ item, index }: { item: OutfitPost; index: number }) {
     const col = index % 3
@@ -29,7 +39,15 @@ export default function ProfileScreen() {
     )
   }
 
-  if (!profile) return null
+  if (isLoading || !profile) {
+    return (
+      <SafeAreaView className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color="#1A1A1A" />
+      </SafeAreaView>
+    )
+  }
+
+  const isOwnProfile = session?.user.id === profile.id
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -41,11 +59,9 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View>
-            {/* Nav */}
-            <View className="flex-row items-center justify-between px-5 pt-4 pb-2">
-              <Text className="font-serif text-2xl text-text-primary">@{profile.username}</Text>
-              <TouchableOpacity onPress={() => router.push('/settings')}>
-                <Settings size={22} color="#111111" />
+            <View className="flex-row items-center px-5 pt-4 pb-2">
+              <TouchableOpacity onPress={() => router.back()} className="mr-4">
+                <ArrowLeft size={22} color="#111111" />
               </TouchableOpacity>
             </View>
             <ProfileHeader
@@ -53,24 +69,12 @@ export default function ProfileScreen() {
               postCount={posts.length}
               followerCount={followerCount}
               followingCount={followingCount}
-              isOwnProfile
-              onEdit={() => router.push('/settings/edit-profile')}
+              isOwnProfile={isOwnProfile}
+              isFollowing={isFollowing}
+              togglingFollow={togglingFollow}
+              onFollow={toggleFollow}
             />
             <View className="border-t border-border mb-0.5" />
-          </View>
-        }
-        ListEmptyComponent={
-          <View className="items-center justify-center py-16 px-10">
-            <Text className="font-serif text-xl text-text-primary mb-2 text-center">No posts yet</Text>
-            <Text className="font-sans text-text-secondary text-center mb-6">
-              Share your first outfit to get started
-            </Text>
-            <TouchableOpacity
-              onPress={() => router.push('/post/new')}
-              className="bg-accent rounded-btn px-6 h-11 items-center justify-center"
-            >
-              <Text className="font-sans-bold text-white">Post a look</Text>
-            </TouchableOpacity>
           </View>
         }
         contentContainerStyle={{ paddingBottom: 32 }}
